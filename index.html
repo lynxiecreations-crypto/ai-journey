@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Learning Journey · Microsoft Learn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =============================================
+       CSS CUSTOM PROPERTIES (THEME SYSTEM)
+    ============================================= */
+    :root {
+      --bg-primary: #f7f6f3;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-nav: rgba(247, 246, 243, 0.88);
+      --bg-hero: linear-gradient(135deg, #e8f4fd 0%, #f0e8ff 50%, #fde8f0 100%);
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a6a;
+      --text-muted: #8888aa;
+      --accent-blue: #0078d4;
+      --accent-violet: #7c3aed;
+      --accent-rose: #e11d48;
+      --accent-teal: #0891b2;
+      --accent-amber: #d97706;
+      --accent-green: #059669;
+      --border: rgba(0, 0, 0, 0.07);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.05);
+      --shadow-hover: 0 20px 60px rgba(0,0,0,0.12), 0 8px 20px rgba(0,0,0,0.06);
+      --radius-sm: 10px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --nav-height: 64px;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0d0d1a;
+      --bg-secondary: #13132a;
+      --bg-card: #181830;
+      --bg-nav: rgba(13, 13, 26, 0.92);
+      --bg-hero: linear-gradient(135deg, #0d1b2e 0%, #1a0d2e 50%, #2e0d1a 100%);
+      --text-primary: #f0f0ff;
+      --text-secondary: #b0b0d0;
+      --text-muted: #6868a0;
+      --border: rgba(255, 255, 255, 0.07);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.3);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+      --shadow-hover: 0 20px 60px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    /* =============================================
+       RESET & BASE
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      transition: background 0.4s ease, color 0.4s ease;
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       SCROLL PROGRESS BAR
+    ============================================= */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      width: 0%;
+      background: linear-gradient(90deg, #0078d4, #7c3aed, #e11d48);
+      z-index: 1000;
+      transition: width 0.1s linear;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* =============================================
+       NAVBAR
+    ============================================= */
+    nav {
+      position: fixed;
+      top: 3px; left: 0; right: 0;
+      height: var(--nav-height);
+      background: var(--bg-nav);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      z-index: 900;
+      display: flex;
+      align-items: center;
+      padding: 0 5%;
+      gap: 2rem;
+      transition: background 0.4s ease, border-color 0.4s ease;
+    }
+
+    .nav-logo {
+      font-family: 'Sora', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--accent-blue);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .nav-logo .dot {
+      width: 8px; height: 8px;
+      background: linear-gradient(135deg, #0078d4, #7c3aed);
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.7; }
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex: 1;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-links::-webkit-scrollbar { display: none; }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+      background: var(--border);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      width: 44px; height: 24px;
+      background: var(--border);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.3s ease;
+      outline: none;
+    }
+
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    [data-theme="dark"] .theme-toggle::after {
+      transform: translateX(20px);
+      background: #a78bfa;
+    }
+
+    .theme-icon {
+      font-size: 0.9rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* =============================================
+       HERO SECTION
+    ============================================= */
+    #hero {
+      min-height: 100vh;
+      background: var(--bg-hero);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: calc(var(--nav-height) + 60px) 5% 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s ease;
+    }
+
+    /* Decorative orbs */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .orb-1 {
+      width: 400px; height: 400px;
+      background: #0078d4;
+      top: -100px; left: -100px;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .orb-2 {
+      width: 300px; height: 300px;
+      background: #7c3aed;
+      bottom: -80px; right: 10%;
+      animation: float 10s ease-in-out infinite reverse;
+    }
+
+    .orb-3 {
+      width: 200px; height: 200px;
+      background: #e11d48;
+      top: 40%; left: 60%;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(20px, -20px) scale(1.05); }
+      66% { transform: translate(-15px, 15px) scale(0.95); }
+    }
+
+    .hero-content {
+      max-width: 760px;
+      position: relative;
+      z-index: 1;
+      animation: heroFadeIn 1s ease-out forwards;
+    }
+
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      transition: background 0.4s ease;
+    }
+
+    .hero-badge .rocket { font-size: 1rem; }
+
+    h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #0078d4 0%, #7c3aed 50%, #e11d48 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+      font-weight: 300;
+      line-height: 1.8;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--accent-blue);
+      color: white;
+      padding: 12px 28px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 14px rgba(0,120,212,0.35);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,120,212,0.45);
+      background: #006cbd;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      padding: 12px 28px;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      transition: all 0.25s ease;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+      transform: translateY(-2px);
+    }
+
+    /* Stats row */
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      justify-content: center;
+      margin-top: 3.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: block;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--border);
+      align-self: center;
+    }
+
+    /* =============================================
+       SECTION WRAPPERS
+    ============================================= */
+    section {
+      padding: 80px 5%;
+    }
+
+    .section-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .section-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-blue);
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+
+    .section-title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-desc {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* =============================================
+       TOPIC CARDS GRID
+    ============================================= */
+    #topics { background: var(--bg-secondary); transition: background 0.4s ease; }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .topic-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .topic-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .topic-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--card-accent, #0078d4);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .topic-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+      border-color: transparent;
+    }
+
+    .topic-card:hover::before { opacity: 1; }
+
+    .card-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      background: var(--card-icon-bg, rgba(0,120,212,0.1));
+    }
+
+    .card-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--card-accent, #0078d4);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+
+    .card-desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 1rem;
+    }
+
+    .card-example {
+      background: var(--bg-primary);
+      border-left: 3px solid var(--card-accent, #0078d4);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      transition: background 0.4s ease;
+    }
+
+    .card-example strong {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--card-accent, #0078d4);
+      margin-bottom: 4px;
+    }
+
+    /* =============================================
+       QUIZ SECTION
+    ============================================= */
+    #quiz { background: var(--bg-primary); transition: background 0.4s ease; }
+
+    .quiz-container {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .quiz-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 2rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      transition: background 0.4s ease, border-color 0.4s ease;
+      opacity: 0;
+      transform: translateY(16px);
+    }
+
+    .quiz-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .quiz-q-num {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .quiz-question {
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .quiz-option {
+      padding: 11px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+      background: transparent;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .quiz-option:hover:not(:disabled) {
+      border-color: var(--accent-blue);
+      color: var(--text-primary);
+      background: rgba(0,120,212,0.05);
+    }
+
+    .quiz-option.correct {
+      border-color: #059669;
+      background: rgba(5, 150, 105, 0.08);
+      color: #059669;
+      font-weight: 500;
+    }
+
+    .quiz-option.wrong {
+      border-color: #e11d48;
+      background: rgba(225, 29, 72, 0.08);
+      color: #e11d48;
+    }
+
+    .quiz-feedback {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      display: none;
+      line-height: 1.5;
+    }
+
+    .quiz-feedback.show { display: block; }
+
+    .quiz-feedback.correct-fb {
+      background: rgba(5, 150, 105, 0.08);
+      color: #059669;
+      border: 1px solid rgba(5, 150, 105, 0.2);
+    }
+
+    .quiz-feedback.wrong-fb {
+      background: rgba(225, 29, 72, 0.08);
+      color: #e11d48;
+      border: 1px solid rgba(225, 29, 72, 0.2);
+    }
+
+    .quiz-score {
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      display: none;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .quiz-score.show { display: block; }
+
+    .score-number {
+      font-family: 'Sora', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0078d4, #7c3aed);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .score-msg { color: var(--text-secondary); font-size: 0.95rem; }
+
+    .btn-reset {
+      margin-top: 1rem;
+      padding: 10px 24px;
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    .btn-reset:hover { background: #006cbd; transform: translateY(-1px); }
+
+    /* =============================================
+       FOOTER / CTA SECTION
+    ============================================= */
+    #learn-more {
+      background: var(--bg-secondary);
+      text-align: center;
+      transition: background 0.4s ease;
+    }
+
+    .learn-card {
+      max-width: 600px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 3rem 2.5rem;
+      box-shadow: var(--shadow-md);
+      transition: background 0.4s ease;
+    }
+
+    .learn-card .book-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .learn-card h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .learn-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 1.75rem;
+      line-height: 1.7;
+    }
+
+    .learn-links {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border);
+      padding: 2rem 5%;
+      text-align: center;
+      transition: background 0.4s ease;
+    }
+
+    footer p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    footer a {
+      color: var(--accent-blue);
+      text-decoration: none;
+    }
+
+    footer a:hover { text-decoration: underline; }
+
+    /* =============================================
+       TRANSITIONS FOR SCROLL ANIMATION
+    ============================================= */
+    .topic-card { transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
+    .topic-card:nth-child(2) { transition-delay: 0.07s; }
+    .topic-card:nth-child(3) { transition-delay: 0.14s; }
+    .topic-card:nth-child(4) { transition-delay: 0.21s; }
+    .topic-card:nth-child(5) { transition-delay: 0.28s; }
+    .topic-card:nth-child(6) { transition-delay: 0.35s; }
+    .topic-card:nth-child(7) { transition-delay: 0.42s; }
+
+    .quiz-card { transition: opacity 0.5s ease, transform 0.5s ease; }
+    .quiz-card:nth-child(2) { transition-delay: 0.1s; }
+    .quiz-card:nth-child(3) { transition-delay: 0.2s; }
+
+    /* =============================================
+       RESPONSIVE
+    ============================================= */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero-stats { gap: 1.5rem; }
+      .stat-divider { display: none; }
+      section { padding: 60px 5%; }
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-cta { flex-direction: column; align-items: center; }
+      .learn-card { padding: 2rem 1.5rem; }
+    }
+
+    /* =============================================
+       SCROLLBAR
+    ============================================= */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+  <!-- Progress Bar -->
+  <div id="progress-bar"></div>
+
+  <!-- =============================================
+       NAVBAR
+  ============================================= -->
+  <nav>
+    <a href="#hero" class="nav-logo">
+      <span class="dot"></span> AI Journey
+    </a>
+    <div class="nav-links">
+      <a href="#topics">Topics</a>
+      <a href="#intro-ai">Intro to AI</a>
+      <a href="#gen-ai">Gen AI</a>
+      <a href="#nlp">NLP</a>
+      <a href="#speech">Speech</a>
+      <a href="#vision">Vision</a>
+      <a href="#extraction">Extraction</a>
+      <a href="#responsible">Responsible AI</a>
+      <a href="#quiz">Quiz</a>
+    </div>
+    <div class="nav-actions">
+      <span class="theme-icon" id="theme-icon">☀️</span>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle dark/light mode"></button>
+    </div>
+  </nav>
+
+  <!-- =============================================
+       HERO
+  ============================================= -->
+  <section id="hero">
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="rocket">🚀</span>
+        Documenting my AI learning journey with Microsoft Learn
+      </div>
+      <h1>
+        Introduction to<br />
+        <span class="gradient-text">AI Concepts</span>
+      </h1>
+      <p class="hero-sub">
+        A curated personal guide through the foundations of Artificial Intelligence — built with curiosity, powered by Microsoft Learn.
+      </p>
+      <div class="hero-cta">
+        <a href="#topics" class="btn-primary">Explore Topics →</a>
+        <a href="#quiz" class="btn-secondary">Take the Quiz</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">7</span>
+          <span class="stat-label">Topics Covered</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">AI</span>
+          <span class="stat-label">Focus Area</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">3</span>
+          <span class="stat-label">Quiz Questions</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">MS</span>
+          <span class="stat-label">Learn Platform</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       TOPICS OVERVIEW
+  ============================================= -->
+  <section id="topics">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-eyebrow">Curriculum</span>
+        <h2 class="section-title">What You'll Learn</h2>
+        <p class="section-desc">Seven core areas of AI, broken down into beginner-friendly concepts with real-world context.</p>
+      </div>
+      <div class="cards-grid" id="cards-grid">
+        <!-- Cards are injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       QUIZ SECTION
+  ============================================= -->
+  <section id="quiz">
+    <div class="section-inner">
+      <div class="section-header">
+        <span class="section-eyebrow">Knowledge Check</span>
+        <h2 class="section-title">Quick Quiz</h2>
+        <p class="section-desc">Test what you've learned with a few quick questions. No pressure — it's all about learning!</p>
+      </div>
+      <div class="quiz-container" id="quiz-container">
+        <!-- Quiz injected by JS -->
+      </div>
+      <div class="quiz-score" id="quiz-score">
+        <span class="score-number" id="score-display"></span>
+        <p class="score-msg" id="score-msg"></p>
+        <button class="btn-reset" id="btn-reset">Try Again 🔄</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =============================================
+       LEARN MORE
+  ============================================= -->
+  <section id="learn-more">
+    <div class="section-inner">
+      <div class="learn-card">
+        <span class="book-icon">📚</span>
+        <h3>Go Deeper with Microsoft Learn</h3>
+        <p>
+          These notes are just the beginning. For structured courses, hands-on labs, and official certifications, explore Microsoft Learn's full AI learning path.
+        </p>
+        <div class="learn-links">
+          <a href="https://learn.microsoft.com/en-us/training/paths/get-started-with-artificial-intelligence-on-azure/" target="_blank" class="btn-primary">
+            Microsoft Learn →
+          </a>
+          <a href="https://learn.microsoft.com/en-us/credentials/certifications/azure-ai-fundamentals/" target="_blank" class="btn-secondary">
+            AI-900 Certification
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>
+      Built with ❤️ while exploring AI & Cloud  ·  Learning via <a href="https://learn.microsoft.com" target="_blank">Microsoft Learn</a>  ·  Educational use only
+    </p>
+  </footer>
+
+  <!-- =============================================
+       JAVASCRIPT
+  ============================================= -->
+  <script>
+    // =============================================
+    // DATA — EDIT THIS ARRAY TO UPDATE ALL CONTENT
+    // =============================================
+    const topics = [
+      {
+        id: "intro-ai",
+        tag: "Module 01",
+        icon: "🤖",
+        title: "Introduction to AI",
+        accent: "#0078d4",
+        iconBg: "rgba(0,120,212,0.1)",
+        description: "Artificial Intelligence is the simulation of human-like intelligence by machines. It enables computers to learn from data, recognize patterns, and make decisions with minimal human intervention.",
+        example: "Netflix recommending your next favourite show based on your watching history is a classic AI application in everyday life."
+      },
+      {
+        id: "gen-ai",
+        tag: "Module 02",
+        icon: "✨",
+        title: "Generative AI & Agents",
+        accent: "#7c3aed",
+        iconBg: "rgba(124,58,237,0.1)",
+        description: "Generative AI creates new content — text, images, audio, and code — by learning patterns from vast datasets. AI Agents are systems that perceive their environment and take autonomous actions to achieve goals.",
+        example: "ChatGPT generating a poem, GitHub Copilot writing code, or DALL·E creating artwork from a text prompt — all examples of Generative AI in action."
+      },
+      {
+        id: "nlp",
+        tag: "Module 03",
+        icon: "💬",
+        title: "Text & Natural Language Processing",
+        accent: "#0891b2",
+        iconBg: "rgba(8,145,178,0.1)",
+        description: "NLP helps machines understand, interpret, and generate human language. It bridges the gap between human communication and computer understanding through techniques like tokenization, sentiment analysis, and translation.",
+        example: "Gmail's Smart Reply suggests short responses to emails. Google Translate converts text between 100+ languages. Both rely on NLP under the hood."
+      },
+      {
+        id: "speech",
+        tag: "Module 04",
+        icon: "🎙️",
+        title: "Speech",
+        accent: "#d97706",
+        iconBg: "rgba(217,119,6,0.1)",
+        description: "Speech AI involves converting spoken language to text (speech recognition) and text back to natural-sounding speech (text-to-speech). It powers voice interfaces and accessibility tools.",
+        example: "Saying \"Hey Siri, set a timer\" or using voice-to-text dictation in Microsoft Word — your voice is transcribed to text in real time using speech recognition."
+      },
+      {
+        id: "vision",
+        tag: "Module 05",
+        icon: "👁️",
+        title: "Computer Vision",
+        accent: "#059669",
+        iconBg: "rgba(5,150,105,0.1)",
+        description: "Computer Vision enables machines to interpret and understand visual information from images and videos. It can identify objects, faces, scenes, and even read text within images (OCR).",
+        example: "Unlocking your iPhone with Face ID, self-driving cars detecting pedestrians, or Google Photos automatically grouping photos of the same person."
+      },
+      {
+        id: "extraction",
+        tag: "Module 06",
+        icon: "🔍",
+        title: "Information Extraction",
+        accent: "#e11d48",
+        iconBg: "rgba(225,29,72,0.1)",
+        description: "Information Extraction (IE) automatically identifies and pulls structured data from unstructured text. It finds entities like names, dates, and locations, and understands relationships between them.",
+        example: "Azure AI Language scanning thousands of customer reviews to automatically extract product names, sentiment, and key phrases — saving hours of manual work."
+      },
+      {
+        id: "responsible",
+        tag: "Module 07",
+        icon: "⚖️",
+        title: "Responsible AI",
+        accent: "#6366f1",
+        iconBg: "rgba(99,102,241,0.1)",
+        description: "Responsible AI is the practice of developing and deploying AI systems that are fair, reliable, safe, private, inclusive, transparent, and accountable. Microsoft's framework ensures AI benefits all of humanity.",
+        example: "Microsoft's Azure AI checks hiring algorithms for gender bias, ensuring AI tools don't disadvantage candidates based on protected characteristics."
+      }
+    ];
+
+    // =============================================
+    // QUIZ DATA — EDIT QUESTIONS & ANSWERS HERE
+    // =============================================
+    const quizData = [
+      {
+        question: "Which AI technology enables Netflix to recommend shows you might enjoy?",
+        options: [
+          "Computer Vision",
+          "Machine Learning & Recommendation Systems",
+          "Speech Recognition",
+          "Information Extraction"
+        ],
+        correct: 1,
+        feedback: "Correct! Netflix uses Machine Learning to analyze your viewing habits and predict content you'll enjoy — a classic real-world AI application."
+      },
+      {
+        question: "What does NLP stand for in the context of AI?",
+        options: [
+          "Neural Learning Protocol",
+          "Network Layer Processing",
+          "Natural Language Processing",
+          "Numeric Logic Programming"
+        ],
+        correct: 2,
+        feedback: "Correct! Natural Language Processing helps machines understand and generate human language — powering chatbots, translators, and more."
+      },
+      {
+        question: "Which of the following is a principle of Microsoft's Responsible AI framework?",
+        options: [
+          "Maximizing profit at all costs",
+          "Fairness and Inclusivity",
+          "Speed over accuracy",
+          "Replacing all human workers"
+        ],
+        correct: 1,
+        feedback: "Correct! Fairness is a core pillar of Responsible AI — ensuring AI systems work equitably across different groups of people."
+      }
+    ];
+
+    // =============================================
+    // RENDER TOPIC CARDS
+    // =============================================
+    function renderCards() {
+      const grid = document.getElementById('cards-grid');
+      grid.innerHTML = '';
+      topics.forEach((topic) => {
+        const card = document.createElement('div');
+        card.className = 'topic-card';
+        card.id = topic.id;
+        card.style.setProperty('--card-accent', topic.accent);
+        card.style.setProperty('--card-icon-bg', topic.iconBg);
+        card.innerHTML = `
+          <div class="card-icon">${topic.icon}</div>
+          <div class="card-tag">${topic.tag}</div>
+          <h3 class="card-title">${topic.title}</h3>
+          <p class="card-desc">${topic.description}</p>
+          <div class="card-example">
+            <strong>Real-life Example</strong>
+            ${topic.example}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // =============================================
+    // RENDER QUIZ
+    // =============================================
+    let answeredCount = 0;
+    let correctCount = 0;
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+      answeredCount = 0;
+      correctCount = 0;
+      document.getElementById('quiz-score').classList.remove('show');
+
+      quizData.forEach((q, qi) => {
+        const card = document.createElement('div');
+        card.className = 'quiz-card';
+        card.id = `quiz-card-${qi}`;
+
+        const optionsHtml = q.options.map((opt, oi) =>
+          `<button class="quiz-option" data-qi="${qi}" data-oi="${oi}">${opt}</button>`
+        ).join('');
+
+        card.innerHTML = `
+          <div class="quiz-q-num">Question ${qi + 1} of ${quizData.length}</div>
+          <div class="quiz-question">${q.question}</div>
+          <div class="quiz-options">${optionsHtml}</div>
+          <div class="quiz-feedback" id="feedback-${qi}"></div>
+        `;
+        container.appendChild(card);
+      });
+
+      // Add click listeners
+      document.querySelectorAll('.quiz-option').forEach(btn => {
+        btn.addEventListener('click', handleAnswer);
+      });
+    }
+
+    function handleAnswer(e) {
+      const btn = e.currentTarget;
+      const qi = parseInt(btn.dataset.qi);
+      const oi = parseInt(btn.dataset.oi);
+      const q = quizData[qi];
+
+      // Disable all options for this question
+      const card = document.getElementById(`quiz-card-${qi}`);
+      const options = card.querySelectorAll('.quiz-option');
+      options.forEach(b => b.disabled = true);
+
+      const feedback = document.getElementById(`feedback-${qi}`);
+
+      if (oi === q.correct) {
+        btn.classList.add('correct');
+        feedback.textContent = '✓ ' + q.feedback;
+        feedback.className = 'quiz-feedback show correct-fb';
+        correctCount++;
+      } else {
+        btn.classList.add('wrong');
+        options[q.correct].classList.add('correct');
+        feedback.textContent = '✗ Not quite. ' + q.feedback;
+        feedback.className = 'quiz-feedback show wrong-fb';
+      }
+
+      answeredCount++;
+      if (answeredCount === quizData.length) {
+        setTimeout(showScore, 600);
+      }
+    }
+
+    function showScore() {
+      const scoreEl = document.getElementById('quiz-score');
+      const displayEl = document.getElementById('score-display');
+      const msgEl = document.getElementById('score-msg');
+
+      displayEl.textContent = `${correctCount}/${quizData.length}`;
+
+      const pct = correctCount / quizData.length;
+      if (pct === 1) msgEl.textContent = "🎉 Perfect score! You're an AI concepts pro!";
+      else if (pct >= 0.5) msgEl.textContent = "👏 Great effort! Review the topics above to strengthen your knowledge.";
+      else msgEl.textContent = "📖 Keep learning! Each concept is just one scroll away.";
+
+      scoreEl.classList.add('show');
+      scoreEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      renderQuiz();
+      // Re-observe quiz cards
+      document.querySelectorAll('.quiz-card').forEach(el => observer.observe(el));
+    });
+
+    // =============================================
+    // THEME TOGGLE
+    // =============================================
+    const html = document.documentElement;
+    const toggle = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+
+    // Load saved theme
+    const saved = localStorage.getItem('ai-journey-theme') || 'light';
+    html.setAttribute('data-theme', saved);
+    icon.textContent = saved === 'dark' ? '🌙' : '☀️';
+
+    toggle.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      icon.textContent = next === 'dark' ? '🌙' : '☀️';
+      localStorage.setItem('ai-journey-theme', next);
+    });
+
+    // =============================================
+    // SCROLL PROGRESS BAR
+    // =============================================
+    const progressBar = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = total > 0 ? (scrolled / total) * 100 : 0;
+      progressBar.style.width = pct + '%';
+    });
+
+    // =============================================
+    // INTERSECTION OBSERVER (FADE-IN ANIMATION)
+    // =============================================
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    function observeAll() {
+      document.querySelectorAll('.topic-card, .quiz-card').forEach(el => {
+        observer.observe(el);
+      });
+    }
+
+    // =============================================
+    // INIT
+    // =============================================
+    renderCards();
+    renderQuiz();
+    observeAll();
+  </script>
+</body>
+</html>
