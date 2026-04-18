@@ -15,7 +15,7 @@ A personal interactive website documenting my learning journey in Artificial Int
 - JavaScript
 
 ## 🌐 Live Demo
-ai-journey-1.netlify.app
+https://ai-journey-1.netlify.app
 
 ## 📚 Purpose
 Built as part of my learning journey in web development and AI fundamentals.
